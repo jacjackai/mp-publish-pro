@@ -6,17 +6,21 @@
 本体是一份 Agent Skills 标准格式的 `SKILL.md`（操作剧本）+ 辅助脚本，执行层依赖开源的
 [Tencent BrowserSkill](https://github.com/Tencent/BrowserSkill)（MIT，见 `NOTICE.md`）。
 
-## 购买后安装
+## 安装
 
 ### 方式一：skills CLI（Claude Code / OpenCode / Codex / Cursor 等）
 
 ```bash
-npx skills add <仓库地址> --skill wechat-mp-publish
+npx skills add jacjackai/mp-publish-pro --skill wechat-mp-publish
 ```
 
-安装器自动探测本机 agent 并放到正确目录。
+安装器自动探测本机 agent 并放到正确目录；更新重跑同一条命令即可。
 
-### 方式二：手动安装（任意 agent，含 Qoder 等不加载技能格式的）
+### 方式二：git clone + 手动安装（任意 agent，含 Qoder 等不加载技能格式的）
+
+```bash
+git clone https://github.com/jacjackai/mp-publish-pro.git
+```
 
 把 `skills/wechat-mp-publish/` 整个目录拷到 agent 的技能目录
 （Claude Code：`~/.claude/skills/`；OpenCode：`~/.config/opencode/skills/`，其余同理），
@@ -33,10 +37,6 @@ npx skills add <仓库地址> --skill wechat-mp-publish
    登录态随后按 Chrome profile 持久。
 4. **用户配置**：复制 `skills/wechat-mp-publish/user.conf.example` 为同目录 `user.conf` 并填写
    （原创作者名必填；合集、赞赏账户可留空跳过）。
-5. **授权激活**：`license.key` 已随交付包放在 `skills/wechat-mp-publish/scripts/` 目录
-   （如需手动放置，也是放这个目录），
-   跑 `python3 skills/wechat-mp-publish/scripts/license_check.py`，看到「已授权」即可开工；
-   以后每次发表 agent 都会先过这道校验。
 
 ## 使用
 
@@ -47,27 +47,12 @@ npx skills add <仓库地址> --skill wechat-mp-publish
 
 全功能、永久免费、没有任何锁——每次发表全流程都能跑。
 
-如果它确实替你省了工夫，可以 9.9 元请作者喝杯咖啡：用满 3 次后会不定期提醒（首次必提，之后大约每 2~5 次）
-（含微信二维码，agent 会展示给你）。**付过的人作者会回发一个 `license.key`**，放进
-`skills/wechat-mp-publish/scripts/` 目录，提醒永久消失。不付也完全不影响使用。
+如果它确实替你省了工夫，可以 9.9 元请作者喝杯咖啡：用满 3 次后会不定期提醒
+（首次必提，之后大约每 2~5 次出现一次，含微信二维码，agent 会展示给你）。
+**付过的人作者会回发一个 `license.key`**，放进 `skills/wechat-mp-publish/scripts/` 目录，
+提醒永久消失。不付也完全不影响使用。
 
 ## 授权
 
-- 本技能 = Agent Skills 剧本 + 脚本，随缘分享；请勿去掉溯源水印后冒充原创倒卖。
+- 仓库完全公开，随便装、随便学；请勿去掉溯源水印冒充原创倒卖。
 - 执行层依赖 Tencent BrowserSkill（MIT，见 NOTICE.md）。
-
-## 使用
-
-对 agent 说「发公众号 / 把这篇发到公众号 / 更新公众号」即可触发；会话结束时 agent 应执行
-`bsk session stop` 收尾。发表环节的微信扫码必须由账号本人完成，技能会在扫码浮层处停下等待。
-
-## 免费试用版与正式版
-
-- **免费试用版**（无 license.key 即自动生效）：永久可用「建草稿/正文/配图/保存为草稿」，到草稿箱为止——后续的封面裁剪、发表前置四项（原创声明/赞赏/合集/创作来源）和发表确认链需要人工在公众号后台完成。
-- **正式版**：上述全部自动化——agent 停在扫码那一步，其余不用碰，另有更新与答疑。
-- 升级方式：扫卖家微信二维码（试用版触发付费功能时会自动弹出），备注「公众号技能」。
-
-## 授权
-
-- 正版授权 = 私有仓库访问权 + 每份交付副本带购买者水印，禁止二次分发（详见随订单的授权条款）。
-- 买断含交付时点版本的全部功能；后续版本更新按年订阅（在原购买渠道续订即可继续 `git pull`）。
