@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 license.key
 user.conf
+.usage-mirror.json

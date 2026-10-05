@@ -5,13 +5,13 @@
 
 模式：
 - 有有效 license.key（scripts/ 同目录）= 已请过咖啡：安静干活，不再提醒。
-- 没有 = 第 4 次起每次输出【请喝咖啡】段：SKILL.md 要求 agent 原样转述用户一次，不拦截流程。
+- 没有 = 第 4 次必提一次，之后每 2~5 次随机再提（不定期，像作者路过打招呼），不拦截流程。
 
 license.key 就是"已请咖啡"凭证：9.9 元后由卖家签发；也可以一直不用，提醒不碍事。
 计数藏两处（~/.mp-publish-pro 与技能目录镜像），取最大值，防一删清零；测试可用
 MP_PUBLISH_PRO_COUNT 环境变量重定向计数目录。
 """
-import base64, datetime, json, os, pathlib, sys
+import base64, datetime, json, os, pathlib, random, sys
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
 PUBLIC_KEY_PEM = b"""-----BEGIN PUBLIC KEY-----
@@ -48,21 +48,33 @@ def load_license():
         return None, "license.key 损坏（签名不符），当作未请咖啡继续；不需要可删掉它。"
 
 
-def bump_counter() -> int:
-    n = 0
+def read_counter() -> dict:
+    best = {"count": 0}
     for p in (COUNTER_HOME, COUNTER_MIRROR):
         try:
-            n = max(n, json.loads(p.read_text(encoding="utf-8"))["count"])
+            doc = json.loads(p.read_text(encoding="utf-8"))
+            if doc.get("count", 0) > best.get("count", 0):
+                best = doc
         except Exception:
             pass
-    n += 1
-    doc = json.dumps({"count": n, "last": datetime.date.today().isoformat()})
+    return best
+
+
+def write_counter(doc: dict):
+    raw = json.dumps(doc, ensure_ascii=False)
     for p in (COUNTER_HOME, COUNTER_MIRROR):
         try:
             p.parent.mkdir(parents=True, exist_ok=True)
-            p.write_text(doc, encoding="utf-8")
+            p.write_text(raw, encoding="utf-8")
         except Exception:
             pass
+
+
+def bump_counter() -> int:
+    doc = read_counter()
+    n = doc.get("count", 0) + 1
+    write_counter({"count": n, "last": datetime.date.today().isoformat(),
+                   "next_nag": doc.get("next_nag")})
     return n
 
 
@@ -92,8 +104,12 @@ def main() -> int:
     n = bump_counter()
     if n <= FREE_RUNS:
         print(f"咖啡模式第 {n}/{FREE_RUNS} 次：安静干活。")
-    else:
+        return 0
+    doc = read_counter()
+    nxt = doc.get("next_nag")
+    if nxt is None or n >= nxt:
         print(coffee_msg(n))
+        write_counter({**doc, "count": n, "next_nag": n + random.randint(2, 5)})
     return 0
 
 
