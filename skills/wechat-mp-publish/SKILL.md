@@ -1,12 +1,15 @@
 ---
 name: wechat-mp-publish
 description: 公众号文章发布自动化 — bsk（BrowserSkill）驱动 mp.weixin.qq.com 编辑器：建草稿（标题/正文/配图/封面/摘要）直至扫码发表。图片库选图、裁剪封面、发表确认链全流程。v2.0 起执行层为 bsk 原生输入（原 CDP 版选择器知识保留复用）。触发 /mp-publish，或要求"发公众号/把文章发到公众号/更新公众号"时使用
-version: 2.0.0
+version: 2.1.0
 trigger: /mp-publish
 tags: [wechat, mp, 公众号, publish, bsk]
 ---
 
 # wechat-mp-publish — 公众号文章发布自动化（bsk 路线）
+
+**v2.1（2026-10-05，产品版）**：license 门槛 + 功能分层试用——无 license 为免费版
+（止步存草稿）；§4/§5/§6 前置 `license_check.py --paid` 付费门，门槛触发展示卖家微信二维码。
 
 **v2.0（2026-09-20）**：执行层从裸 CDP 迁到 bsk（CLI → daemon → 扩展 → Agent Window 借窗）。
 **关键迁移结论：bsk 点击是扩展原生的真实输入，原 CDP 版"必须 computer-use 真点"的
@@ -15,7 +18,8 @@ crop_multi POST 200、cover 落库）。原 CDP 脚本（scripts/）保留作备
 
 ## 0. 纪律与红线
 
-- **开工第一步：license 校验**。`python3 scripts/license_check.py`，退出码 1（无效）→ 停下告知用户；退出码 2（更新期已过）→ 可继续当前任务但提醒续费。
+- **开工第一步：license 校验**。`python3 scripts/license_check.py`，退出码 1（无效）→ 停下告知用户。
+- **免费试用版边界**：无 license.key 时可做「建草稿/正文/配图/保存为草稿」（§1–§3.1），**止步存草稿**；§4 封面裁剪、§5 四项设置、§6 发表确认链为付费功能——进入这三节前必须跑 `python3 scripts/license_check.py --paid`，退出码 3 → 向用户展示二维码（见脚本输出指引）后停，**不得绕过或代点**；退出码 2（更新期已过）→ 提醒续费并停。
 
 - **bsk pin 0.3.0，禁止 `bsk update --yes`**；升级走 headless 冒烟 + `bsk doctor` 全绿。
 - 动浏览器前 `bsk browsers`；多实例时 `session start` 必带 `--browser <id> --no-focus`（默认不抢桌面焦点）；收尾必须 `bsk session stop <id>`。
@@ -92,6 +96,8 @@ body.dispatchEvent(new ClipboardEvent('paste',{clipboardData:dt,bubbles:true,can
 
 ## 4. 配图与封面（bsk click 全通过，不再需要截图真点）
 
+> ⚠️ **付费功能门槛**：先跑 `python3 scripts/license_check.py --paid`，非 0 退出码按脚本提示处理（展示二维码/提醒续费），不得继续。
+
 ### 4.1 上传素材库
 
 仍走 API：编辑器页 `bsk evaluate` 取 `window.wx.commonData.data` 的 uin/ticket/t，
@@ -109,6 +115,8 @@ body.dispatchEvent(new ClipboardEvent('paste',{clipboardData:dt,bubbles:true,can
 
 ## 5. 发表前置四项设置（顺序有依赖，必做）
 
+> ⚠️ **付费功能门槛**：先跑 `python3 scripts/license_check.py --paid`，非 0 退出码按脚本提示处理（展示二维码/提醒续费），不得继续。
+
 设置区在编辑器右侧，点具体可点元素（点整行常无效）：
 
 | 顺序 | 项目 | 点哪里 | 要点 |
@@ -124,6 +132,8 @@ body.dispatchEvent(new ClipboardEvent('paste',{clipboardData:dt,bubbles:true,can
 **「一键排版」永远不要点**。
 
 ## 6. 发表确认链
+
+> ⚠️ **付费功能门槛**：先跑 `python3 scripts/license_check.py --paid`，非 0 退出码按脚本提示处理（展示二维码/提醒续费），不得继续。
 
 1. 点「发表」→ 群发通知浮层 → 点浮层内「发表」→「继续发表」→
 2. **微信扫码浮层 = 硬门，停在这里等用户手机扫码**；扫码阶段不动 Chrome 窗口。
