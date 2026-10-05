@@ -33,7 +33,8 @@ npx skills add <仓库地址> --skill wechat-mp-publish
    登录态随后按 Chrome profile 持久。
 4. **用户配置**：复制 `skills/wechat-mp-publish/user.conf.example` 为同目录 `user.conf` 并填写
    （原创作者名必填；合集、赞赏账户可留空跳过）。
-5. **授权激活**：把卖家私信发给你的 `license.key` 放进 `skills/wechat-mp-publish/` 目录，
+5. **授权激活**：`license.key` 已随交付包放在 `skills/wechat-mp-publish/scripts/` 目录
+   （如需手动放置，也是放这个目录），
    跑 `python3 skills/wechat-mp-publish/scripts/license_check.py`，看到「已授权」即可开工；
    以后每次发表 agent 都会先过这道校验。
 
