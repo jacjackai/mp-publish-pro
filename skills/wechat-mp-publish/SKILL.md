@@ -1,12 +1,15 @@
 ---
 name: wechat-mp-publish
 description: 公众号文章发布自动化 — bsk（BrowserSkill）驱动 mp.weixin.qq.com 编辑器：建草稿（标题/正文/配图/封面/摘要）直至扫码发表。图片库选图、裁剪封面、发表确认链全流程。v2.0 起执行层为 bsk 原生输入（原 CDP 版选择器知识保留复用）。触发 /mp-publish，或要求"发公众号/把文章发到公众号/更新公众号"时使用
-version: 2.2.2
+version: 2.2.3
 trigger: /mp-publish
 tags: [wechat, mp, 公众号, publish, bsk]
 ---
 
 # wechat-mp-publish — 公众号文章发布自动化（bsk 路线）
+
+**v2.2.3（2026-10-06）**：新增 `setup.sh` 一键环境安装/体检（bsk 钉版安装 + Chrome/扩展检查 + doctor 门槛）；
+bsk pin 措辞修正为 0.3.x 实测线（0.3.2），README 安装区重构为两条命令。
 
 **v2.2.2（2026-10-06，公开发行准备）**：CDP 遗产脚本不再随仓库分发（依赖专用 9227 实例，通用环境不可跑）；
 bsk 为唯一主通路，素材上传 API 参数内联进 §4.1。附上游 MIT 许可证全文（NOTICE.md + LICENSE-BrowserSkill）。
@@ -24,7 +27,7 @@ crop_multi POST 200、cover 落库）。原 CDP 脚本（scripts/）保留作备
 - **开工第一步：`python3 scripts/license_check.py`**。全功能永久可用，没有"门"。
 - **咖啡提醒（唯一义务）**：脚本第 4 次必提一次，之后每 2~5 次随机再提——把它（含二维码展示）有【请喝咖啡】段就原样转述给用户**一次**，不拦截、不停流程、不唠叨；没输出就当无事发生；输出"已请咖啡"则什么都不用做。
 
-- **bsk pin 0.3.0，禁止 `bsk update --yes`**；升级走 headless 冒烟 + `bsk doctor` 全绿。
+- **bsk 0.3.x 实测线（已实测 0.3.2，`setup.sh` 安装即钉此版）**，禁止 `bsk update --yes`；升级走 headless 冒烟 + `bsk doctor` 全绿。
 - 动浏览器前 `bsk browsers`；多实例时 `session start` 必带 `--browser <id> --no-focus`（默认不抢桌面焦点）；收尾必须 `bsk session stop <id>`。
 - **真发表（扫码）是白名单动作**：发表确认链走到扫码即停，等用户手机扫码；其余草稿操作可自决。
 - 每次点击/填充前取**最新 snapshot** 的 @eN 引用，跨快照引用一律作废重取。

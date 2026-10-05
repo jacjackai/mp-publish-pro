@@ -6,17 +6,30 @@
 本体是一份 Agent Skills 标准格式的 `SKILL.md`（操作剧本）+ 辅助脚本，执行层依赖开源的
 [Tencent BrowserSkill](https://github.com/Tencent/BrowserSkill)（MIT，见 `NOTICE.md`）。
 
-## 安装
+## 安装（两条命令）
 
-### 方式一：skills CLI（Claude Code / OpenCode / Codex / Cursor 等）
+**① 环境体检**：装 bsk CLI（钉在实测版本 0.3.2）、查 Chrome、引导装扩展、`bsk doctor` 全绿当闸。可重复跑，装不上就带着脚本输出提 issue：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jacjackai/mp-publish-pro/main/setup.sh | sh
+```
+
+不想 `curl | sh`：clone 本仓库后跑 `sh setup.sh`，效果相同。
+
+**② 装技能本体**：安装器自动探测本机 agent 并放到正确目录；更新重跑同一条命令即可。
 
 ```bash
 npx skills add jacjackai/mp-publish-pro --skill wechat-mp-publish
 ```
 
-安装器自动探测本机 agent 并放到正确目录；更新重跑同一条命令即可。
+### 手动装环境（setup.sh 做的事，供对照/排障）
 
-### 方式二：git clone + 手动安装（任意 agent，含 Qoder 等不加载技能格式的）
+1. **bsk** CLI：`curl -fsSL https://raw.githubusercontent.com/Tencent/BrowserSkill/main/install.sh | BSK_VERSION=0.3.2 sh`，`bsk doctor` 全绿再开工。**禁止 `bsk update --yes`**（0.3.x 为实测线，升级走 headless 冒烟 + doctor 全绿）
+2. **Chrome + BrowserSkill 扩展**：[Chrome 商店直达](https://chromewebstore.google.com/detail/hhcmgoofomhgciiibhipgmgkgnoenaoi)，装好打开扩展弹窗启用本地连接，`bsk browsers` 能看到浏览器
+3. **公众号登录态**：`bsk navigate "https://mp.weixin.qq.com/"` 后落扫码页即需人工扫码一次，登录态随后按 Chrome profile 持久
+4. **用户配置**：复制 `skills/wechat-mp-publish/user.conf.example` 为同目录 `user.conf` 并填写（原创作者名必填；合集、赞赏账户可留空跳过）
+
+### 不加载技能格式的 agent（如 Qoder）
 
 ```bash
 git clone https://github.com/jacjackai/mp-publish-pro.git
@@ -27,16 +40,6 @@ git clone https://github.com/jacjackai/mp-publish-pro.git
 或在首次对话里直接要求：
 
 > 发公众号前，先完整阅读 skills/wechat-mp-publish/SKILL.md 并严格按它执行。
-
-## 环境要求（缺一不可，缺哪个 agent 会卡在哪步）
-
-1. **bsk** CLI：按 [官方安装指南](https://github.com/Tencent/BrowserSkill/blob/main/AGENT_INSTALL.md) 安装，
-   `bsk doctor` 全绿再开工。**禁止 `bsk update --yes`**（版本以 SKILL.md pin 为准）。
-2. **Chrome + BrowserSkill 扩展**：安装指南第 4 步，扩展连上后 `bsk browsers` 能看到浏览器。
-3. **公众号登录态**：`bsk navigate "https://mp.weixin.qq.com/"` 后落扫码页即需人工扫码一次，
-   登录态随后按 Chrome profile 持久。
-4. **用户配置**：复制 `skills/wechat-mp-publish/user.conf.example` 为同目录 `user.conf` 并填写
-   （原创作者名必填；合集、赞赏账户可留空跳过）。
 
 ## 使用
 
