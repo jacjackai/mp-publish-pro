@@ -1,0 +1,4 @@
+# 复制为 user.conf 并填写真实值。user.conf 不要提交回仓库、不要随副本分发。
+author=你的原创声明作者名，≤8字，必填
+collection=默认合集名，可留空
+reward_account=赞赏账户名，可留空
