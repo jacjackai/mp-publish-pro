@@ -97,8 +97,12 @@ def main() -> int:
     if err:
         print(err)
     if payload is not None:
-        until = payload.get("update_until", "")
-        note = f"，更新期至 {until}" + ("（已过，功能照常可用）" if datetime.date.today().isoformat() > until else "")
+        until = payload.get("update_until")
+        # 旧年费线签发的 license 带 update_until，兼容显示；coffeeware 默认签发不带 = 永久
+        if until:
+            note = f"，更新期至 {until}" + ("（已过，功能照常可用）" if datetime.date.today().isoformat() > until else "")
+        else:
+            note = "，永久有效"
         print(f"已请咖啡：{payload['buyer']}（GitHub: {payload['github']}）{note}")
         return 0
     n = bump_counter()
