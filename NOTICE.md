@@ -2,7 +2,7 @@
 
 本产品执行层依赖 [Tencent BrowserSkill](https://github.com/Tencent/BrowserSkill)（`bsk` CLI 及浏览器扩展），
 以 MIT License 发布。按 MIT 要求，分发本产品时须随附其许可证与版权声明——
-打包发布前从上游仓库 LICENSE 文件取最新全文附于本目录（勿手抄，以仓库为准）。
+全文已随附本目录 `LICENSE-BrowserSkill`（取自上游仓库 LICENSE，勿手抄，升级时以仓库最新为准）。
 
 - 上游仓库：https://github.com/Tencent/BrowserSkill
 - 协议：MIT

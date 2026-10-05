@@ -1,12 +1,15 @@
 ---
 name: wechat-mp-publish
 description: 公众号文章发布自动化 — bsk（BrowserSkill）驱动 mp.weixin.qq.com 编辑器：建草稿（标题/正文/配图/封面/摘要）直至扫码发表。图片库选图、裁剪封面、发表确认链全流程。v2.0 起执行层为 bsk 原生输入（原 CDP 版选择器知识保留复用）。触发 /mp-publish，或要求"发公众号/把文章发到公众号/更新公众号"时使用
-version: 2.2.1
+version: 2.2.2
 trigger: /mp-publish
 tags: [wechat, mp, 公众号, publish, bsk]
 ---
 
 # wechat-mp-publish — 公众号文章发布自动化（bsk 路线）
+
+**v2.2.2（2026-10-06，公开发行准备）**：CDP 遗产脚本不再随仓库分发（依赖专用 9227 实例，通用环境不可跑）；
+bsk 为唯一主通路，素材上传 API 参数内联进 §4.1。附上游 MIT 许可证全文（NOTICE.md + LICENSE-BrowserSkill）。
 
 **v2.2（2026-10-05，coffeeware）**：全功能免费不设门；license.key=已请咖啡凭证（9.9，付后提醒消失）；
 无 license 第 4 次起开工时输出【请喝咖啡】，agent 原样转述一次、不拦流程。
@@ -98,8 +101,17 @@ body.dispatchEvent(new ClipboardEvent('paste',{clipboardData:dt,bubbles:true,can
 
 ### 4.1 上传素材库
 
-仍走 API：编辑器页 `bsk evaluate` 取 `window.wx.commonData.data` 的 uin/ticket/t，
-或复用原 `scripts/mp_upload.py` 逻辑；scene=8 = 文章配图。
+走 API（无 UI）：先在编辑器页 `bsk evaluate` **同步**读 `window.wx.commonData.data` 的
+`uin / ticket / t(token)`，再向 filetransfer 接口发 multipart 表单（文件字段名 `file`）：
+
+```
+POST https://mp.weixin.qq.com/cgi-bin/filetransfer?action=upload_material
+     &f=json&scene=8&writetype=doublewrite&groupid=1
+     &ticket_id={uin}&ticket={ticket}&svr_time={unix秒}&token={t}&lang=zh_CN
+```
+
+`scene=8` = 文章配图；返回 JSON 的 `cdn_url`（mmbiz.qpic.cn）即素材地址，之后走 §4.2 图片库 UI 选图。
+注意 bsk evaluate 不等 Promise：fetch 类逻辑要么写成同步式样，要么把票据取出来在页面外发请求。
 
 ### 4.2 选图 + 封面裁剪（bsk 原生点击，实测通过）
 
@@ -145,7 +157,7 @@ msg_status 102=审核中；appmsg_info[].content_url=文章链接
 - 草稿箱删除测试草稿：草稿箱列表 → 卡片操作 link（hover 后出现）→ 弹窗「确定删除？…」→ 点「删除」button。
 - 发表后内容不可改（masssendmodify 是纯预览），修排版唯一路径=删除重发（沿袭）。
 - 排版规范沿袭：少表格多列表；代码块走工具栏「插入代码」+ 纯文本粘贴
-  （原 §9 全部有效：视口宽度、「更多」下拉里同名按钮无效、伪块直接子元素选择器等坑照旧）。
+  （CDP 时代实测的排版坑照旧有效：视口宽度、「更多」下拉里同名按钮无效、伪块直接子元素选择器等）。
 
 ## 8. 验收清单
 
@@ -157,15 +169,15 @@ msg_status 102=审核中；appmsg_info[].content_url=文章链接
 - [ ] 发表：扫码由用户完成；之后合集（user.conf 的 collection）+赞赏码开启
 - [ ] `bsk session stop <sid>`
 
-## 9. CDP 遗产（备用）
+## 9. CDP 遗产（不入本仓库）
 
-`scripts/`（mp_draft/mp_upload/mp_cover/mp_code/mp_del_by_id/raw_cdp.py）保留可跑，
-页面级 CDP 直连方法不变（握手禁带 Origin）。注意：专用场景实例 `wechat-mp`(:9227) 的登录态
-已于 2026-09-20 检查时失效，重启用需人工扫码；bsk 侧浏览器登录态有效（当日实测）。
+裸 CDP 版脚本（mp_draft/mp_upload/mp_cover/mp_code/mp_del_by_id/mp_preview/raw_cdp/mp_session）
+留在作者私有主干，**不随本仓库分发**——它们依赖专用 9227 Chrome 实例，通用环境不可跑。
+本技能唯一主通路 = bsk；CDP 时代的页面知识（选择器、坑）已内联进 §2–§7。
 
-## 10. 版本与真源
+## 10. 版本与更新
 
-- **真源 = 主干** `~/myProject/WeChat/wechat-mp-publish/`（含 scripts/ 遗产），
-  安装位 `~/.agents/skills/wechat-mp-publish/` 是产物。只改主干，再跑主干 `install.sh` 推送，
-  禁止直接改安装位——2026-10 收编前本技能只有安装位副本，一次重装/同步就会丢改动。
-- v2.0.0（执行层换 bsk 原生输入，CDP 知识降为 §9 备用）；2026-10-03 收编入主干。
+- 真源 = 本仓库 [jacjackai/mp-publish-pro](https://github.com/jacjackai/mp-publish-pro)，
+  版本号见根目录 `VERSION` 与本文件 frontmatter，两处同步走。
+- 更新方式：重跑安装命令 `npx skills add jacjackai/mp-publish-pro --skill wechat-mp-publish`（同命令覆盖升级）。
+- 升级可能覆盖技能目录：`user.conf`（§0.5）与 `license.key` 若丢失，按 README 的原位说明补回即可（均为单文件）。
