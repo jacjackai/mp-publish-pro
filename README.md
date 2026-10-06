@@ -55,6 +55,11 @@ git clone https://github.com/jacjackai/mp-publish-pro.git
 **付过的人作者会回发一个 `license.key`**，放进 `skills/wechat-mp-publish/scripts/` 目录，
 提醒永久消失。不付也完全不影响使用。
 
+## 交流 / 支持
+
+- **微信扫码**（进交流群 · 提需求 · 请咖啡，一个码全包）：<https://jacjackai.github.io/mp-publish-pro/join/>——页面地址永不改变，换码只换图，建议收藏
+- 装不上、有 bug：带着 `setup.sh` 的输出去 [GitHub Issues](https://github.com/jacjackai/mp-publish-pro/issues)
+
 ## 授权
 
 - 仓库完全公开，随便装、随便学；请勿去掉溯源水印冒充原创倒卖。
